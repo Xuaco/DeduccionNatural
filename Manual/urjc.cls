@@ -3,34 +3,74 @@
 
 \LoadClass[12pt, a4paper]{article}
 \RequirePackage[left=3.5cm,top=2cm,right=3cm,includehead]{geometry}
+\RequirePackage{fontawesome5}
+
+\newtheorem{teo}{Teorema}
+\newtheorem{proof}{Proof}
+\newtheorem{defi}{Definición}
+\newtheorem{ejm}{Ejemplo}
+\newtheorem{prop}{Proposición}
+\newtheorem{lema}{Lema}
 
 %%%%%%%%%%%%%%%%%%%%%%% Estilo de bibliografia
 \RequirePackage{csquotes}
-\PassOptionsToPackage{
-  natbib=true,
-  style=bwl-FU,%	authoryear-comp,
-  maxbibnames=99,
-%  firstinits=true,
-  firstinits=false,
-  backend=bibtex,
-}   {biblatex}
-\RequirePackage{biblatex}
-\DeclareNameAlias{sortname}{last-first} 
+\RequirePackage[
+backend=bibtex,
+style=authoryear-comp,
+maxnames=2,
+maxbibnames=99,
+%firstinits=true,
+labelnumber=true,
+uniquelist=true,
+sortcites=true,
+hyperref=true,
+]{biblatex}
 
-\DeclareCiteCommand{\cite}[\mkbibparens]
-{\usebibmacro{prenote}}
-{\usebibmacro{citeindex}%
-  \printtext[bibhyperref]{\printnames[cite]{labelname} \printfield[cite]{year}}}%{\usebibmacro{cite}}}
-{\multicitedelim}
-{\usebibmacro{postnote}}
-% Titles in bold
+% \hypersetup{ hidelinks, colorlinks=true, allcolors=stimulate!70}
+
+% Bibliography style
+\DeclareNameAlias{sortname}{last-first} 
 \DeclareFieldFormat*{title}{\textbf{#1}}
-\DeclareCiteCommand{\citetitle}
+
+\DeclareCiteCommand{\citen}
 {\usebibmacro{prenote}}
 {\usebibmacro{citeindex}%
-  \printtext[bibhyperref]{\printfield[cite]{labeltitle} (\printfield[cite]{year})}}
+  \printtext[bibhyperref]{\printfield[cite]{labelnumber}}}
 {\multicitedelim}
 {\usebibmacro{postnote}}
+\DeclareCiteCommand{\citeyear}
+    {}
+    {\bibhyperref{\printdate}}
+    {\multicitedelim}
+    {}
+
+\newcommand{\citet}[1]{{\citeauthor{#1}, \citeyear{#1}}}
+
+% \PassOptionsToPackage{
+%   natbib=true,
+%   style=bwl-FU,%	authoryear-comp,
+%   maxbibnames=99,
+% %  firstinits=true,
+%   firstinits=false,
+%   backend=bibtex,
+% }   {biblatex}
+% \RequirePackage{biblatex}
+% \DeclareNameAlias{sortname}{last-first} 
+
+% \DeclareCiteCommand{\cite}[\mkbibparens]
+% {\usebibmacro{prenote}}
+% {\usebibmacro{citeindex}%
+%   \printtext[bibhyperref]{\printnames[cite]{labelname} \printfield[cite]{year}}}%{\usebibmacro{cite}}}
+% {\multicitedelim}
+% {\usebibmacro{postnote}}
+% % Titles in bold
+% \DeclareFieldFormat*{title}{\textbf{#1}}
+% \DeclareCiteCommand{\citetitle}
+% {\usebibmacro{prenote}}
+% {\usebibmacro{citeindex}%
+%   \printtext[bibhyperref]{\printfield[cite]{labeltitle} (\printfield[cite]{year})}}
+% {\multicitedelim}
+% {\usebibmacro{postnote}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%% Estilo de enlaces
@@ -149,3 +189,59 @@
 \end{titlepage}
 }
 
+
+% custom colors
+\RequirePackage{xcolor}
+\definecolor{PrologPredicate}{RGB}{0,0,200}
+\definecolor{PrologVar}      {RGB}{105,0,200}
+\definecolor{PrologComment}  {RGB}{169,082,044}
+\definecolor{PrologOther}    {rgb}{0.2,0.2,0.2}
+\definecolor{PrologString}   {RGB}{0,0,200}
+
+\RequirePackage{listings} 
+\RequirePackage{textcomp}
+\newcommand{\code}{\lstinline[]}
+\newcommand{\sust}{\lstinline[basicstyle = \ttfamily\relsize{-.5}\color{PrologComment},
+]}
+\lstset{
+  basicstyle = \ttfamily\relsize{-.5}\color{PrologPredicate},
+  numberstyle=\tiny,
+  xleftmargin=0.5cm,
+  numbers=left,
+  xleftmargin=0.1cm,
+  numbers=none,
+  upquote = true,
+  stepnumber=1,
+  belowskip=0pt,
+  mathescape = true,
+  escapechar = @,
+  escapeinside = {-<}{>-}
+}
+\lstdefinestyle{MyProlog}
+{
+  keywords = {},
+  aboveskip=0pt,
+  upquote = true,
+%  basicstyle = \ttfamily\relsize{-1}\color{PrologPredicate},
+  basewidth = 0.52em,
+  moredelim = {**[s][\color{PrologString}]{'}{'}},
+  moredelim = {*[s][\color{PrologVar}]{(}{)}},
+  moredelim = {*[s][\color{PrologOther}]{:-}{.}},
+  moredelim = {*[s][\color{PrologPredicate}]{?-}{.}},
+  moredelim = {*[s][\color{PrologComment}]{/*}{*/}},
+  moredelim = **[is][\color{PrologPredicate}]{@}{@},
+  moredelim = [is][\bfseries \color{orange}]{&oo&}{&oo&},
+  commentstyle = \mdseries\color{PrologComment},
+  morecomment=[l]\%,
+  morecomment=[s]{/*}{*/},
+  literate     =
+  {á}{{\'a}}1  {é}{{\'e}}1  {í}{{\'i}}1 {ó}{{\'o}}1  {ú}{{\'u}}1
+  {Á}{{\'A}}1  {É}{{\'E}}1  {Í}{{\'I}}1 {Ó}{{\'O}}1  {Ú}{{\'U}}1
+  {ä}{{\"a}}1  {ë}{{\"e}}1  {ï}{{\"i}}1 {ö}{{\"o}}1  {ü}{{\"u}}1
+  {ñ}{{\~n}}1  {Ñ}{{\~N}}1  {¿}{{?`}}1  {¡}{{!`}}1
+  {-->}{{\texttt{-->}}}2
+  {\\$}{{\color{PrologOther}\$}}1
+  {&(}{{\color{PrologOther}(}}1
+  {&)}{{\color{PrologOther})}}1
+  {&.}{{.}}0
+} %$
