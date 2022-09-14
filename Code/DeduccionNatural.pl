@@ -4,6 +4,7 @@
 %  Author: Joaquín Arias
 %  Date: 15 August 2022
 %  Purpose: Execute Natural Deduction Proofs
+%  LICENSE: Apache License 2.0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 :- module(_,_).
