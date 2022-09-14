@@ -30,7 +30,7 @@ Se trata de un programa Prolog, para observar el resultado de algunos ejemplos, 
 
 El resultado esperado se muestra en la siguiente captura de pantallas.
 
-![captura](Manual/tex/captura.jpg)
+![captura](Manual/tex/captura.png)
 
 
 ## Licencias
