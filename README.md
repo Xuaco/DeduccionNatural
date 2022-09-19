@@ -11,7 +11,7 @@ Se trata de un programa Prolog, para observar el resultado de algunos ejemplos, 
 ?- ejemplo1.
 ```
 El resultado esperado de la ejecución, usando el Playground de Ciao, se muestra en la siguiente captura de pantalla.
-![captura](captura.jpg)
+![captura](captura.png)
 ## Tutoriales
 Este programa se ha desarrollado como parte de la asignatura de Lógica en la Escuela Técnica Superior de Ingeniería Informática de la Universidad Rey Juan Carlos.
 Los apuntes de la asignatura, manual de uso del programa y videos tutoriales están disponibles en la biblioteca digital de la URJC ([https://burjcdigital.urjc.es/](https://burjcdigital.urjc.es/)).
