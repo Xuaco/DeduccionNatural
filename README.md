@@ -14,7 +14,7 @@ El resultado esperado de la ejecución, usando el Playground de Ciao, se muestra
 ![captura](captura.png)
 ## Tutoriales
 Este programa se ha desarrollado como parte de la asignatura de Lógica en la Escuela Técnica Superior de Ingeniería Informática de la Universidad Rey Juan Carlos.
-Los apuntes de la asignatura, manual de uso del programa y videos tutoriales están disponibles en las carpetas correspondientes, en la biblioteca digital de la URJC ([https://burjcdigital.urjc.es/](https://burjcdigital.urjc.es/)), y en los siguientes enlaces de YouTube.com:
+Los apuntes de la asignatura, manual de uso del programa y videos tutoriales están disponibles en las carpetas correspondientes, en la biblioteca digital de la URJC ([https://burjcdigital.urjc.es/](https://burjcdigital.urjc.es/handle/10115/20168)), y en los siguientes enlaces de YouTube.com:
 
 * [Tutorial 1](https://youtu.be/gpWFFFUTHX0)
 * [Tutorial 2](https://youtu.be/G7i55ub4dW0)
