@@ -16,9 +16,9 @@ El resultado esperado de la ejecución, usando el Playground de Ciao, se muestra
 Este programa se ha desarrollado como parte de la asignatura de Lógica en la Escuela Técnica Superior de Ingeniería Informática de la Universidad Rey Juan Carlos.
 Los apuntes de la asignatura, manual de uso del programa y videos tutoriales están disponibles en las carpetas correspondientes, en la biblioteca digital de la URJC ([https://burjcdigital.urjc.es/](https://burjcdigital.urjc.es/)), y en los siguientes enlaces de YouTube.com:
 
-* [https://youtu.be/gpWFFFUTHX0](Tutorial 1)
-* [https://youtu.be/G7i55ub4dW0](Tutorial 2)
-* [https://youtu.be/K1clmokaOsY](Tutorial 3)
+* [Tutorial 1](https://youtu.be/gpWFFFUTHX0)
+* [Tutorial 2](https://youtu.be/G7i55ub4dW0)
+* [Tutorial 3](https://youtu.be/K1clmokaOsY)
 
 ## Licencias
 El código tiene licencia Apache License 2.0.
