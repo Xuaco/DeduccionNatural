@@ -2,12 +2,12 @@
 %                          Copyright (C)2023 Joaquín Arias (URJC)
 %  Name: DeduccionNatural.pl
 %  Author: Joaquín Arias
-%  Date: 22 April 2023
+%  Date: 24 October 2023
 %  Purpose: Execute Natural Deduction Proofs
 %  LICENSE: Apache License 2.0
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-:- module('DeduccionNatural',_).
+
 
 % Operator precedence
 :- op(200, fy, !).
@@ -17,6 +17,21 @@
 % Auxiliary precedence for !
 % Used to define the inference rules
 :- op(400, xfy, !).
+
+%% Bug found by students of the cybersecurity degree of the URJC in
+%% the academic year 23/24. Solved in 24 October 2023 
+bug :-
+    main([s --> c],
+        c,
+        [ 
+            'Premisa'(1),
+            'Supuesto'(s),
+            'E' --> (1,2),
+            'I' --> (2,3),
+            'I' or a(3,sa),
+            'E' --> (5,2)
+        ]).
+
 
 %% Examples
 ejemplo1 :-
@@ -50,8 +65,8 @@ ejemplo3 :-
          ]).
 
 ejemplo4 :-
-    main([ p --> q, q-->r ],
-         p-->r,
+    main([ p --> q, q-->r],
+         p --> r,
          [ 'Premisa'(1),
            'Premisa'(2),
            'Supuesto'(p),
@@ -79,6 +94,8 @@ ejemploSupuesto :-
             'Supuesto'(p1),
             'Supuesto'(p2),
             'Supuesto'(p3),
+%            'I' --> (6,5),
+            'I' --> (7,5),
             'Supuesto'(p4),
             'Supuesto'(s and !r)
           ]).
@@ -102,7 +119,7 @@ check_pending_([Name|Ns]) :-
     assert(counter(0)), assert(tabular(0)),
     rule(Name, Hypotheses, Deduction, Proof), !,
     numbervars([Hypotheses, Deduction, Proof], 0, _),
-    format("\n\n Demostración de la regla derivada ~p:  T~p  |-  ~p\n\n",[Name,Hypotheses,Deduction]),
+    format("\n\n Demostración de la regla auxiliar ~p:  T~p  |-  ~p\n\n",[Name,Hypotheses,Deduction]),
     eval(Hypotheses, Deduction, Proof), !,
     check_pending_(Ns).
 
@@ -116,7 +133,7 @@ eval_rule(R, P):-
     (   exec(R, P) ->
         output(R)
     ;
-        format("\nERROR aplicando\t\t~p", [R]), !, fail
+        format("\nFALLO: No se puede aplicar la regla \t\t~p\n\n", [R]), !, fail
     ).
 
 exec('Premisa'(C), Hypotheses) :- !,
@@ -147,14 +164,15 @@ see_formulas([A|As], [FA|FAs]) :-
 check_deduccion(Deduction) :-
     retract(counter(C)),
     formula(C, Formula),
-    (   \+ opened(_) ->
+    (   opened(_) ->
+        findall(A, opened(A), LA),
+        format("\nFALLO: Supuesto(s) '~w' no está(n) cerrado(s)\n\n",[LA]),!,fail
+    ;
         (   Formula = Deduction ->
             format("~50|ok",[])
         ;
-            format("\nERROR: Fórmula ~w no coincide con lo esperado ~w\n\n",[Formula,Deduction])
+            format("\nFALLO: Se demuestra '~w' en lugar de '~w'\n\n",[Formula,Deduction]),!,fail
         )
-    ;
-        format("\nERROR: Supuesto no cerrado\n\n",[])
     ).
 
 add_formula(Formula) :-
@@ -195,64 +213,63 @@ format_tabular(T) :-
 %% Inference Rules
 % Conjunction
 'I' and (A, B) :-
-    formula(A, FA),
-    formula(B, FB),
+    formula(A, FA), is_valid(A),
+    formula(B, FB), is_valid(B),
     add_formula(FA and FB).
 
 'E' and a(A) :-
-    formula(A, FA and _FB),
+    formula(A, FA and _FB), is_valid(A),
     add_formula(FA).
 'E' and b(A) :-
-    formula(A, _FA and FB),
+    formula(A, _FA and FB), is_valid(A),
     add_formula(FB).
 % Disjuncion
 'E' or (A, B, C) :-
-    formula(A, FB or FC),
-    formula(B, FB --> F),
-    formula(C, FC --> F),
+    formula(A, FB or FC), is_valid(A),
+    formula(B, FB --> F), is_valid(B),
+    formula(C, FC --> F), is_valid(C),
     add_formula(F).
 
 'I' or a(A, Formula) :-
-    formula(A, FA),
+    formula(A, FA), is_valid(A),
     add_formula(FA or Formula).
 'I' or b(Formula, B) :-
-    formula(B, FB),
+    formula(B, FB), is_valid(B),
     add_formula(Formula or FB).
 % Negation
 'I' ! (A) :-
-    formula(A, FA --> B and ! B),
+    formula(A, FA --> B and ! B), is_valid(A),
     add_formula(! FA).
 
 'E' ! (A) :-
-    formula(A, ! ! FA),
+    formula(A, ! ! FA), is_valid(A),
     add_formula(FA).
 % Implication
 'E' --> (A, B) :-
-    formula(A, FB --> FC),
-    formula(B, FB),
+    formula(A, FB --> FC), is_valid(A),
+    formula(B, FB), is_valid(B),
     add_formula(FC).
 'I' --> (A, B) :-
-    opened(A),
-    formula(A, FA),
-    valid(B),
-    formula(B, FB),
+    formula(A, FA), is_valid(A),
+    last_opened(A),
+    formula(B, FB), is_valid(B),
     close_assumption(A),
     add_formula(FA --> FB).
 'Supuesto'(FA) :-
     increase_tab,
     add_formula(FA),
     counter(C),
-    assert(opened(C)).
+    asserta(opened(C)).
 % Bi-Implication
 'I' <-> (A, B) :-
-    formula(A, FA --> FB),
-    formula(B, FB --> FA),
+    formula(A, FA --> FB), is_valid(A),
+    formula(B, FB --> FA), is_valid(B),
     add_formula(FA <-> FB).
 'E' <-> a(A) :-
-        formula(A, FA <-> FB),
+        formula(A, FA <-> FB), is_valid(A),
         add_formula(FA --> FB).
 'E' <-> b(A) :-
-        formula(A, FA <-> FB),
+        formula(A, FA <-> FB), is_valid(A),
         add_formula(FB --> FA).
 
 
@@ -271,6 +288,19 @@ rule( 'MT',
    
 
 % Auxiliary predicates
+last_opened(A) :-
+    retract(opened(L)),
+    (   L = A ->
+        true
+    ;
+        format("\nFALLO: Cerrar antes el supuesto '~w'", [L]), !, fail
+    ).
+is_valid(A) :-
+    (   valid(A) ->
+        true
+    ;
+        format("\nFALLO: La fórmula '~p' está en un supuesto cerrado", [A]), !, fail
+    ).
 valid(B) :-
     \+ closed(B).
 close_assumption(A) :-
@@ -278,7 +308,7 @@ close_assumption(A) :-
     between(A, C, C1),
     assert(closed(C1)),
     fail.
-close_assumption(A) :-
-    decrease_tab,
-    retract(opened(A)).
+close_assumption(_A) :-
+    decrease_tab.
+
 
