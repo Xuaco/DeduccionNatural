@@ -5,7 +5,7 @@ DeduccionNatural.pl es un programa escrito en Ciao Prolog [https://ciao-lang.org
  * Videos tutoriales realizados por: Iván Ramírez Díaz.
 ## Código
 El programa está autocontenido un un archivo prolog llamado DeduccionNatural.pl.
-Para su ejecución se puede instalar Ciao Prolog de modo local (visitar [https://ciao-lang.org/](https://ciao-lang.org/)) o utilizar el playground online siguiendo el siguiente enlace: [https://tinyurl.com/deduccionnatural23](https://tinyurl.com/deduccionnatural23)
+Para su ejecución se puede instalar Ciao Prolog de modo local (visitar [https://ciao-lang.org/](https://ciao-lang.org/)) o utilizar el playground online siguiendo el siguiente enlace: [https://tinyurl.com/deduccionnatural23b](https://tinyurl.com/deduccionnatural23b)
 Se trata de un programa Prolog, para observar el resultado de algunos ejemplos, escribir la consulta correspondiente:
 ```
 ?- ejemplo1.
