@@ -99,6 +99,18 @@ ejemploSupuesto :-
             'Supuesto'(p4),
             'Supuesto'(s and !r)
           ]).
+ejemploMorganAnd :-
+     main( [ !(s and q)],
+          !s or !q,
+          [ 'Premisa'(1),
+            'Morgan And'(1)
+          ]).
+ejemploMorganOr :-
+     main( [ !(s or q)],
+          !s and !q,
+          [ 'Premisa'(1),
+            'Morgan Or'(1)
+          ]).
 
 :- data counter/1, formula/2, tabular/1, closed/1, opened/1, check/1.
 main(Hypotheses, Deduction, Proof) :-
@@ -285,8 +297,42 @@ rule( 'MT',
         'I' --> (3, 5),    
         'I' ! (6)
       ]).
-   
 
+rule( 'Morgan And',
+      [ !(A and B) ],
+      !A or !B,
+      [ 'Premisa'(1),
+        'Supuesto'(!(!A or !B)),
+        'Supuesto'(!A),
+        'I' or a(3, !B),
+        'I' --> (3, 4),
+        'MT'(5, 2),
+        'E' ! (6),
+        'Supuesto'(!B),
+        'I' or b(!A, 8),
+        'I' --> (8, 9),
+        'MT'(10, 2),
+        'E' ! (11),
+        'I' and (7, 12),
+        'I' --> (2, 13),
+        'MT'(14, 1),
+        'E' ! (15)
+      ]).
+
+rule( 'Morgan Or',
+      [ !(A or B) ],
+      !A and !B,
+      [ 'Premisa'(1),
+        'Supuesto'(A),
+        'I' or a(2, B),
+        'I' --> (2, 3),
+        'MT'(4, 1),
+        'Supuesto'(B),
+        'I' or b(A, 6),
+        'I' --> (6, 7),
+        'MT'(8, 1),
+        'I' and (5, 9)
+      ]).
 % Auxiliary predicates
 last_opened(A) :-
     retract(opened(L)),
