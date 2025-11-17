@@ -1,0 +1,1041 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <title>Blockly — Generador JSON con claves automáticas</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <style>
+      html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial;background:#ffffff;}
+      a{ font: inherit; color: inherit; }    
+      .header{display: flex;justify-content: space-between;height:50px;padding:10px;font-size:30px;font-weight:700;}
+      .menu{display:flex; justify-content: space-between; align-items: center; padding: 10px;height:20px;font-size:16px;}
+      .menu-left, .menu-right { display: flex; align-items: center; gap: 5px;}    
+      .container{display:flex;height:calc(100vh - 110px);padding:8px;gap:8px;box-sizing:border-box;background:#ffffff;}
+      #blocklyDiv{position:relative;flex:1;height:100%;background:#FFE5B4;border:1px solid #ddd;border-radius:8px;box-sizing:border-box;padding:4px;}
+      .blocklySvg { background-color: #fefcf3; }
+      #panel{width:30%;min-width:220px;box-sizing:border-box;background:transparent;display:flex;flex-direction:column;}
+      #panelHeader{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+      .tabs{display:flex;margin:0;padding:0;list-style:none;width:100%;}
+      .tab{flex:0;margin:0 10px 0 0;cursor:pointer;padding:0 21px;height:32px;line-height:32px;font-size:16px;font-weight:bold;background:#fefcf3;border:1px solid #FFE5B4;position:relative;border-radius:8px;color:black}
+      .tab.active{border-bottom:2px solid #fefcf3;border-radius:8px 8px 0 0;position: relative;z-index: 10;height:40px;line-height:40px;}
+      .tab-content{flex:1;padding:12px;background:#fefcf3;font-family:monospace;font-size:16px;border:1px solid #FFE5B4; border-radius:0 0 6px 6px;white-space: pre-wrap;monospace;overflow:auto;display:none; position: relative; top: -1px;}
+      .tab-content.active{display:block;}
+      #instructionArea { font-size: 13px; text-align: justify; white-space: normal;color: #555 }
+      button { font-size: 14px; padding: 7px; background: #eee; border-radius: 8px; border: 1px solid #bbb;cursor: pointer; box-sizing: border-box;  }
+      .fixed-button { background: #5b74a5;color:white;font-size: 14px; position: absolute; top: 15px; right: 15px; z-index: 10;}
+      .dropdown {position:relative; display:inline-block;}
+      .dropdown-content {display:none; position:absolute; padding:5px;background:#f9f9f9; border: 1px solid #ccc; border-radius: 6px; z-index: 50;   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);  width: max-content;   }
+      .dropdown-content a {display:block; padding:5px 10px; text-decoration:none; color:black;  white-space: pre-wrap;}
+      .dropdown-content a.link:hover {background:#f1f1f1;}
+      .dropdown:hover .dropdown-content {display:block;}
+    </style>
+
+  </head>
+
+
+
+  <body>
+
+    <div class="header">
+      <div>
+	<a href="file:///Users/joaquin/Box%20Sync/Investigacion/PersonalRepositorio/URJC/Projects/DeduccionNatural/example/generator2.html"><img src="logo.png" alt="logo" height="55" style="vertical-align:middle"></a>
+	
+	DeduccionNatural.blockly
+      </div>
+      <div style="display: flex; justify-content: flex-end; align-items: center;">
+	<a class="github-button" href="https://github.com/Xuaco/DeduccionNatural" data-icon="octicon-mark-github" data-size="large" data-show-count="true">Star</a>
+      </div>    
+    </div>  
+
+    <div class="menu">
+      <div class="menu-left">
+	<button id="undoBtn"> <i class="fa-solid fa-reply"></i></button>
+	<button id="redoBtn"><i class="fa-solid fa-share"></i></button>
+	<button id="saveBtn"> Guardar </button>
+	<input type="file" id="fileInput" style="display:none;">
+	<button id="loadBtn"> Abrir </button>
+	
+	<div class="dropdown">
+	  <button>Ejemplos ▼</button>
+	  <div class="dropdown-content">
+            <!-- <a href="https://tinyurl.com/4nvey9en">Ejemplo 1</a> -->
+	  </div>
+	</div>
+      </div>
+      <div class="menu-right">
+	<button id="shareBtn"> <i class="fas fa-external-link"></i> Compartir! </button>
+      </div>
+    </div>  
+    
+
+
+    
+    <div class="container">
+      <div id="blocklyDiv">      
+	<button class="fixed-button" id="add_proposition">+ proposicion(es)</button>
+      </div>
+
+      <aside id="panel">
+	<div class="tabs">
+          <div class="tab active" data-tab="codeArea">Código</div>
+          <!-- <div class="tab" data-tab="demoArea">Demostración</div> -->
+          <div class="tab" data-tab="instructionArea">Instrucciones</div>
+	</div>
+
+	<div class="tab-content active" id="codeArea">
+          // Pulsa “Actualizar” para ver el código generado.
+	</div>
+	<div class="tab-content" id="demoArea">
+	  
+	</div>
+	<div class="tab-content" id="instructionArea">
+	  <p>
+	    a) Para iniciarte en la deducción natural, es útil revisar
+	    una referencia introductoria.  Los <strong>
+	      <a href="https://burjcdigital.urjc.es/bitstream/handle/10115/20014/Lo%cc%81gica-apuntes.pdf?sequence=19&isAllowed=y"
+	      target="_blank">Apuntes de Lógica: desde Aristóteles
+	      hasta Prolog</a>
+	    </strong> de Joaquín Arias (2023) ofrecen una explicación
+	    clara y progresiva, ideal para comprender los fundamentos
+	    que luego aplicarás en Blockly.  Dedicar unos minutos al
+	    tema 2 ayudará a situarte y entender mejor el sistema.
+	  </p>
+
+	  <p>
+	    b) Una vez tengas una idea general, explora el
+	    entorno <strong>DeduccionNatural.blockly</strong>.
+	    Empieza revisando los ejemplos y, después, avanza a los
+	    ejercicios ordenados por dificultad: básico, medio y
+	    avanzado.  El objetivo es que practiques la construcción
+	    de demostraciones y te familiarices con los pasos
+	    habituales de la deducción natural.
+	  </p>
+
+	  <p>
+	    c) La pestaña "Código" va mostrando la traducción de la
+	    demostración en Prolog para
+	    ejecutarla usando <b>DeduccionNatural.pl</b>. Una vez termines de
+	    construir la demostración:
+	    <ul style="margin-top:-12px;margin-bottom:0;padding-left:20px;">
+	    <li > Cópiala y abre el enlace
+	    <a href="https://tinyurl.com/deduccionnatural23b"
+	    target="_blank"><span style=" word-break:
+	    break-all;">https://tinyurl.com/deduccionnatural23b</span></a>.
+	    </li>
+	    <li> Pégala en el toplevel de Ciao Prolog (panel derecho)
+	    y pulsa "Enter".
+	    </li></ul>
+	    Comprueba si tu demostración es correcta.  Este proceso te
+	    permitirá verificar rápidamente si has construido bien la
+	    prueba.
+	  </p>
+
+	  <p>
+	  <p>
+	    NOTA: DeduccionNatural.blockly además de
+	    cargar <i>ejemplos</i>, permite <i>deshacer</i>
+	    y <i>rehacer</i> cambios en los bloques, <i>guardar</i>
+	    y <i>abrir</i> tus demostraciones como archivos
+	    '.blockly', y <i>compartir</i> el workspace mediante una
+	    URL que se copia automáticamente al portapapeles (y que
+	    puedes acortar con <a href="https://tinyurl.com"
+	    target="_blank">TinyURL</a> antes de enviarla).
+	  </p>
+	</div>
+
+	<footer style="font-size:14px;padding:2px;color:#5b74a5">
+	  Version 1.0 &nbsp;|&nbsp;
+	  <i class="fa-regular fa-copyright"></i> 2025 &nbsp;
+	  <a href="http://www.ia.urjc.es/GIA/joaquin-arias/">Joaquín Arias</a> - URJC
+	</footer>
+      </aside>
+    </div>
+
+    <script>
+      const tabs = document.querySelectorAll(".tab");
+      const contents = document.querySelectorAll(".tab-content");
+
+      tabs.forEach(tab => {
+	  tab.addEventListener("click", () => {
+              // Activar pestaña
+              tabs.forEach(t => t.classList.remove("active"));
+              tab.classList.add("active");
+              // Mostrar contenido asociado
+              contents.forEach(c => c.classList.remove("active"));
+              document.getElementById(tab.dataset.tab).classList.add("active");
+	  });
+      });
+
+    </script>
+    <script src="./examples.js"></script>
+    <script>
+      // Función que espera ms milisegundos
+      function wait(ms) {
+	  return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      async function initDropdown() {
+	  // Esperar hasta que window.ejemplos exista
+	  while (!window.ejemplos) {
+	      await wait(1); // espera 1 ms
+	  }
+
+	  const dropdown = document.querySelector('.dropdown-content');
+
+	  window.ejemplos.forEach(ej => {
+	      const a = document.createElement('a');
+	      if (ej.code) {
+		  const codeEncoded = encodeURIComponent(ej.code);
+		  const url = `${window.location.origin}${window.location.pathname}?code=${codeEncoded}`;
+		  a.classList.add('link');
+		  a.href = url;
+	      } else {
+		  a.style.fontWeight = 'bold';
+	      }
+	      a.innerHTML = ej.nombre;
+	      dropdown.appendChild(a);
+
+	  });
+      }
+
+      initDropdown(); // iniciar la creación del dropdown
+    </script>
+
+
+    <!-- Toolbox -->
+    <xml id="toolbox" xmlns="https://developers.google.com/blockly/xml" style="display:none">
+      
+      <!-- Para crear el logotipo -->
+      <!-- <block type="logo"></block> -->
+      <!-- <block type="deduccion"></block> -->
+      <!-- <block type="natural"></block> -->
+      <sep gap="10"></sep>
+      <block type="main"></block>         <sep gap="5"></sep>
+      <block type="premisa"></block>
+
+      <block type="proposition_get_dropdown"></block>          <sep gap="5"></sep>
+      <block type="logic_not"></block>               <sep gap="5"></sep>
+      <block type="logic_binary"></block>
+
+      <block type="proof"></block>          <sep gap="5"></sep>
+
+      <block type="rule_premisa"></block>          <sep gap="5"></sep>
+      <block type="rule_supuesto"></block>          <sep gap="5"></sep>
+      <block type="rules_selector"></block>          <sep gap="5"></sep>
+      <block type="rule_I_and"></block>          <sep gap="5"></sep>
+      <block type="rule_E_and"></block>          <sep gap="5"></sep>
+      <block type="rule_I_or"></block>          <sep gap="5"></sep>
+      <block type="rule_E_or"></block>          <sep gap="5"></sep>
+      <block type="rule_I_not"></block>          <sep gap="5"></sep>
+      <block type="rule_E_not"></block>          <sep gap="5"></sep>
+      <block type="rule_I_imply"></block>          <sep gap="5"></sep>
+      <block type="rule_E_imply"></block>          <sep gap="5"></sep>
+      <block type="rule_I_double"></block>          <sep gap="5"></sep>
+      <block type="rule_E_double"></block>
+
+    </xml>
+    
+    <script>
+      // Definición de bloques personalizados
+      Blockly.defineBlocksWithJsonArray([
+	  // Estos tres primeros son para el logotipo ;-)
+	  {
+	      "type": "logo",
+	      "message0": "%1 %2 %3",
+	      "args0": [
+		  { "type": "field_label", "name": "PREMISA_INDEX", "text": "   " },
+		  { "type": "input_statement", "name": "PREMISAS", "check": "premisa" },
+		  { "type": "input_value", "name": "CONSECUENTE", "check": "Boolean" },
+	      ],
+	      "nextStatement": "premisa",
+	      "inputsInline": false,
+	      "colour": 180,
+	      "tooltip": "Bloque inicial: solo puede existir uno y no se conecta con otros.",
+	      "helpUrl": ""
+	  },
+	  {
+	      "type": "deduccion",
+	      "message0": "Deduccion %1 %2",
+	      "args0": [
+		  { "type": "field_label", "name": "PREMISA_INDEX", "text": "" },
+		  { "type": "input_value", "name": "PREMISA" }
+	      ],
+	      "previousStatement": "premisa",
+	      "nextStatement": "premisa",
+	      "colour": 320,
+	      "tooltip": "Define Premisa x.",
+	      "helpUrl": ""
+	  },
+	  {
+	      "type": "natural",
+	      "message0": "Natural%1",
+	      "args0": [
+		  { "type": "field_variable", "name": "PROPOSITION", "variable": ",blockly" }
+	      ],
+	      "output": null,
+	      "colour": 220,
+	      "tooltip": "",
+	      "helpUrl": ""
+	  },
+	  {
+	      "type": "main",
+	      "message0": "DeduccionNatural %1 { Premisas } %2 %3 ⊨ Consecuente %4 %5 %6",
+	      "args0": [
+		  { "type": "input_dummy" },
+		  { "type": "input_statement", "name": "PREMISAS", "check": "premisa" },
+		  { "type": "field_label", "name": "TEXT", "text": "    " },
+		  { "type": "input_value", "name": "CONSECUENTE", "check": "Boolean" },
+		  { "type": "input_dummy" },
+		  { "type": "input_statement", "name": "PRUEBA", "check": "proof" }
+	      ],
+	      "inputsInline": false,
+	      "colour": 180,
+	      "tooltip": "Bloque inicial: solo puede existir uno y no se conecta con otros.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "premisa",
+	      "message0": "Premisa %1 : %2",
+	      "args0": [
+		  { "type": "field_label", "name": "PREMISA_INDEX", "text": "x" },
+		  { "type": "input_value", "name": "PREMISA", "check": "Boolean" }
+	      ],
+	      "previousStatement": "premisa",
+	      "nextStatement": "premisa",
+//	      "output": "premisa",
+	      "colour": 320,
+	      "tooltip": "Define Premisa x.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "proof",
+	      "message0": "Demostración %1 %2 ",
+	      "args0": [
+		  { "type": "input_dummy" },
+		  { "type": "input_statement", "name": "RULESS", "check": "rules" }
+	      ],
+	      "previousStatement": "proof",
+	      "colour": 300,
+	      "tooltip": "Bloque principal de la demostración",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rules_selector",
+	      "message0": "%1",
+	      "args0": [
+		  { "type": "field_dropdown", "name": "RULE_NAME", "options": [["#x","#x"]] }
+	      ],
+	      "output": "RuleNum",
+	      "colour": 110,
+	      "tooltip": "Selecciona una fórmula existente",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_premisa",
+	      "message0": "%1 : Premisa (%2)",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "field_dropdown", "name": "PREMISA_INDEX", "options": [["x","x"]] }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 70,
+	      "tooltip": "Selecciona una premisa existente",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_supuesto",
+	      "message0": "%1 : Supuesto (%2)",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": "Boolean" }
+	      ],
+	      "previousStatement": "imply",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Introducir supuesto.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_I_and",
+	      "message0": "%1 : I∧ (%2,%3)",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": "RuleNum" },
+		  { "type": "input_value", "name": "B", "check": "RuleNum" }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Introducir and.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_E_and",
+	      "message0": "%1 : E∧ (%2) %3",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": "RuleNum" },
+		  { "type": "field_dropdown", "name": "LR", "options": [["A","a"], ["B","b"]] }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Eliminar and.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_I_or",
+	      "message0": "%1 : I∨ (%2,%3)",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": ["RuleNum", "Boolean"] },
+		  { "type": "input_value", "name": "B", "check": ["RuleNum", "Boolean"] }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Introducir or.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_E_or",
+	      "message0": "%1 : E∨ (%2,%3,%4)",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": "RuleNum" },
+		  { "type": "input_value", "name": "B", "check": "RuleNum" },
+		  { "type": "input_value", "name": "C", "check": "RuleNum" }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Eliminar or.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_I_not",
+	      "message0": "%1 : I¬ (%2)",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": "RuleNum" }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Introducir not.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_E_not",
+	      "message0": "%1 : E¬ (%2)",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": "RuleNum" }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Eliminar not.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_I_imply",
+	      "message0": " %1 %2 :  I→ (%3,%4)",
+	      "args0": [
+		  { "type": "input_statement", "name": "RULESS" },
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x","check": "imply" },
+		  { "type": "input_value", "name": "A", "check": "RuleNum" },
+		  { "type": "input_value", "name": "B", "check": "RuleNum" }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "inputsInline": true,
+	      "colour": 70,
+	      "tooltip": "Introducir ->.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_E_imply",
+	      "message0": "%1 : E→ (%2,%3)",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": "RuleNum" },
+		  { "type": "input_value", "name": "B", "check": "RuleNum" }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Eliminar -->.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_I_double",
+	      "message0": "%1 : I↔ (%2,%3)",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": "RuleNum" },
+		  { "type": "input_value", "name": "B", "check": "RuleNum" }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Introducir <->.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "rule_E_double",
+	      "message0": "%1 : E↔ (%2) %3",
+	      "args0": [
+		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
+		  { "type": "input_value", "name": "A", "check": "RuleNum" },
+		  { "type": "field_dropdown", "name": "LR", "options": [["A -> B","a"], ["B -> A","b"]] }
+	      ],
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+	      "tooltip": "Eliminar <->.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "proposition_get_dropdown",
+	      "message0": "%1",
+	      "args0": [
+		  { "type": "field_variable", "name": "PROPOSITION", "variable": "---" }
+	      ],
+	      "output": "Boolean",
+	      "colour": 220,
+	      "tooltip": "",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "logic_not",
+	      "message0": "¬ %1",
+	      "args0": [
+		  { "type": "input_value", "name": "A", "check": "Boolean" }
+	      ],
+	      "inputsInline": true,
+	      "output": "Boolean",
+	      "colour": 230,
+	      "tooltip": "Negación lógica.",
+	      "helpUrl": ""
+	  },
+
+	  {
+	      "type": "logic_binary",
+	      "message0": "%1 %2 %3",
+	      "args0": [
+		  { "type": "input_value", "name": "A", "check": "Boolean" },
+		  { "type": "field_dropdown", "name": "OP", "options": [["∧","&&"],["∨","||"],["→","->"],["↔","<->"]] },
+		  { "type": "input_value", "name": "B", "check": "Boolean" }
+	      ],
+	      "inputsInline": true,
+	      "output": "Boolean",
+	      "colour": 210,
+	      "tooltip": "Conectiva lógica binaria.",
+	      "helpUrl": ""
+	  }
+      ]);
+      
+       Blockly.Blocks['rule_I_imply'].onchange = function(event) {
+       	  const first = this.getInputTargetBlock('RULESS');
+       	   if (first && first.type !== 'rule_supuesto') {
+       	       first.unplug();
+       	       console.warn('El primer bloque de RULESS debe ser rule_supuesto');
+       	   }
+       };
+      Blockly.Blocks['rule_I_or'].onchange = function(event) {
+	  const Ablock = this.getInputTargetBlock('A');
+	  const Bblock = this.getInputTargetBlock('B');
+
+	  if (Ablock && Bblock &&
+	      (Ablock.type === Bblock.type ||
+	       (Ablock.type !== 'rules_selector' && Bblock.type !== 'rules_selector')))
+	  {
+	      Bblock.unplug();
+	  }
+	  
+      };
+
+
+
+      // Inyectar workspace
+      const workspace = Blockly.inject('blocklyDiv', {
+	  toolbox: document.getElementById('toolbox'),
+	  scrollbars: false,
+	  trashcan: false,
+	  grid: { spacing: 20, length: 2, colour: '#ccc', snap: true },
+	  zoom: {     startScale: .9, controls: true, wheel: true }
+      });
+     
+
+      
+      // Function para detectar bloques tipo rule
+      function is_rule(block_type) {
+	  return /^rule_.+/.test(block_type);
+      }
+      // Function para impedir dos main en workspace
+      function only_one_main() {
+	  const iniciales = workspace.getAllBlocks(false)
+		.filter(b => b.type === 'main');
+	  if (iniciales.length > 1) {
+	      // Elimina el bloque extra creado
+	      const extra = iniciales[iniciales.length - 1];
+	      extra.dispose(true);
+	      alert("Solo se permite un bloque 'inicio'.");
+	  }
+      }
+      // Function para enumerar los bloque de reglas
+      function process_rules() {
+	  let ruless = [];
+	  function processRulesSequence(start) {
+              let current = start;
+              while (current) {
+		  if (current.type === 'rule_I_imply') {
+		      const nestedStart = current.getInputTargetBlock('RULESS');
+		      processRulesSequence(nestedStart);
+		  }
+		  if (is_rule(current.type)) {	
+		      ruless.push(current);
+		  }
+		  current = current.getNextBlock();
+              }
+	  }
+	  
+          workspace.getAllBlocks(false).forEach(block => {
+	      if (block.type === 'main') {
+		  premisa = block.getInputTargetBlock('PREMISAS');
+		  i = 1;
+		  while (premisa) {
+		      autoIndex = `${i}`;
+		      if (premisa.getFieldValue('PREMISA_INDEX') !== autoIndex) {
+			  premisa.setFieldValue(autoIndex, 'PREMISA_INDEX');
+		      }
+		      i++;
+		      premisa = premisa.getNextBlock();
+		  }	
+	      }
+	      if (block.type === 'proof') {
+		  ruless = [];
+		  const start = block.getInputTargetBlock('RULESS');
+		  processRulesSequence(start);
+		  ruless.forEach((m, i) => {
+		      const autoName = `#${i + 1}`;
+		      if (m.getFieldValue('RULES_NAME') !== autoName) {
+			  m.setFieldValue(autoName, 'RULES_NAME');
+		      }
+		  });
+	      }
+          });
+	  const keys = workspace.getAllBlocks(false)
+		.filter(b =>  is_rule(b.type))
+		.map(b => b.getFieldValue('RULES_NAME'))
+		.filter(name => name && name.trim() !== '')
+		.sort((a,b) => {
+		    // Extrae el número de las cadenas (ej: "#12" -> 12)
+		    const numA = parseInt(a.substring(1));
+		    const numB = parseInt(b.substring(1));
+		    return numA - numB;
+		});
+	  const options = keys.length ? keys.map(k => [k, k]) : [['(sin reglas)', '']];
+	  workspace.getAllBlocks(false).forEach(b => {
+	      if (b.type === 'rules_selector') {
+		  const field = b.getField('RULE_NAME');
+		  field.menuGenerator_ = options;
+		  const current = field.getValue();
+		  if (!keys.includes(current)) field.setValue('');
+	      }
+	  });
+      }
+      // Funcion para actualizar los rules_premisa
+      function  updatePremisaOptions() {
+	  const index = workspace.getAllBlocks(false)
+		.filter(b => b.type === 'premisa')
+		.map(b => b.getFieldValue('PREMISA_INDEX'))
+		.filter(name => name && name.trim() !== '');
+	  const premisa_options = index.length ? index.map(k => [k,k]) : [['(sin premisas)', '']];
+	  workspace.getAllBlocks(false).forEach(b => {
+	      if (b.type === 'rule_premisa') {
+		  const field = b.getField('PREMISA_INDEX');
+		  field.menuGenerator_ = premisa_options;
+		  const current = field.getValue();
+		  if (!index.includes(current)) field.setValue('');
+	      }
+	  });
+      }
+      function updateImply() {
+	  workspace.getAllBlocks(false).forEach(b => {
+	      if (b.type === 'rule_I_imply') {
+		  const first =  b.getInputTargetBlock('RULESS')
+		  if (first) { // sabemos que es de tipo 'rule_supuesto'
+		      const connectedA = b.getInputTargetBlock('A');
+		      if (connectedA && connectedA.type === 'rules_selector') {
+			  // actualizar el valor del dropdown al texto del supuesta
+			  const text = first.getFieldValue('RULES_NAME');
+			  connectedA.setFieldValue(text, 'RULE_NAME');
+		      }
+		  }
+	      }
+	  });
+      }
+
+
+      // Listener para actualizar distintos casos
+      workspace.addChangeListener(function(event) {
+	  // Al crear bloques
+	  if (event.type === Blockly.Events.BLOCK_CREATE) {
+	      only_one_main();
+	  }
+	  // Al mover bloques...
+	  if (event.type === Blockly.Events.BLOCK_MOVE || event.type === Blockly.Events.END_DRAG) {
+	      process_rules();
+	      updatePremisaOptions();
+	      updateImply();
+	  }
+	  // actualiza el codigo de Prolog continuamente
+          const code = workspace.getTopBlocks(true)
+		.map(b => translateBlock(b))
+		.join('\n');
+	  document.getElementById('codeArea').textContent = code || '// Añade bloques al workspace.';
+
+          // const demo = workspace.getTopBlocks(true)
+	  // 	.map(b => generateProof(b))
+	  // 	.join('\n');
+	  // document.getElementById('demoArea').textContent = demo || ' ';
+
+      });
+      
+
+      // Activar los botones con sus respectivas funciones
+      document.getElementById('add_proposition').addEventListener('click', createNewVariable);
+
+      document.getElementById('undoBtn').addEventListener('click', () => {
+	  workspace.undo(false);
+      });
+      document.getElementById('redoBtn').addEventListener('click', () => {
+	  workspace.undo(true);
+      });
+      document.getElementById('shareBtn').addEventListener('click', shareWorkspace);
+      document.getElementById('saveBtn').addEventListener('click', saveWorkspace);
+      document.getElementById('loadBtn').addEventListener('click', () => {
+	  document.getElementById('fileInput').click();
+      });
+
+      // Función para crear nueva variable para usar como proposiciones
+      function createNewVariable() {
+     	  const newVar = prompt("Nombre de la nueva proposición:");
+    	  if (newVar && newVar.trim() !== '') {
+    	      try {
+    		  workspace.createVariable(newVar.trim());
+    		  console.log(`Proposición "${newVar.trim()}" creada`);
+    	      } catch (e) {
+    		  alert(`No se pudo crear la proposición: ${e.message}`);
+    	      }
+    	  }
+      }
+
+      // Función para crear URL y compartirla
+      function shareWorkspace() {
+	  try {
+	      const xmlDom = Blockly.Xml.workspaceToDom(workspace);
+	      const xmlText = Blockly.Xml.domToText(xmlDom);
+	      urlpath = `${window.location.origin}${window.location.pathname}`;
+	      //	    const URI = encodeURIComponent(xmlText);
+	      const URI = btoa(unescape(encodeURIComponent(xmlText)))
+		    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+	      const url = `${urlpath}?code=${URI}`;
+
+	      navigator.clipboard.writeText(url)
+		  .then(() => alert('URL copiada al portapapeles!'))
+		  .catch(err => console.error('Error copiando al portapapeles:', err));
+	  } catch (e) {
+	      console.error("Error generando la URL:", e);
+	      alert("No se pudo generar la URL.");
+	  }
+      }
+
+      // Función para guardar el workspace en un archivo
+      async function saveWorkspace() {
+	  const xmlDom = Blockly.Xml.workspaceToDom(workspace);
+	  const xmlText = Blockly.Xml.domToPrettyText(xmlDom);
+	  if (window.showSaveFilePicker) {
+	      try {
+		  const handle = await window.showSaveFilePicker({
+		      suggestedName: "workspace.blockly",
+		      types: [{
+			  description: "XML Blockly",
+			  accept: { "text/xml": [".blockly", ".xml"] }
+		      }]
+		  });
+		  
+		  const writable = await handle.createWritable();
+		  await writable.write(xmlText);
+		  await writable.close();
+	      } catch (e) {
+		  console.warn("Guardado cancelado o error:", e);
+		  return;	    
+	      }
+	  } else {
+	      const blob = new Blob([xmlText], { type: 'text/xml' });
+	      const a = document.createElement('a');
+	      a.href = URL.createObjectURL(blob);
+	      a.download = "workspace.blockly";
+	      a.click();
+	      URL.revokeObjectURL(a.href);
+	  }
+      }
+      
+      // Función para cargar el workspace desde un XML
+      function loadWorkspace(xmlText) {
+	  try {
+              const xml = Blockly.utils.xml.textToDom(xmlText);
+              workspace.clear();
+              Blockly.Xml.domToWorkspace(xml, workspace);
+              process_rules();
+	      updatePremisaOptions(); 
+              workspace.updateToolbox(document.getElementById('toolbox'));
+
+              [['rule_premisa','PREMISA_INDEX'], ['rules_selector','RULE_NAME']]
+		  .forEach(([type, field]) => {
+		      xml.querySelectorAll(`block[type="${type}"]`).forEach(b => {
+			  const id = b.getAttribute('id');
+			  const value = b.querySelector(`field[name="${field}"]`).textContent;
+			  workspace.getAllBlocks(false)
+			      .filter(c => c.id === id)
+			      .forEach(c => c.getField(field).setValue(value));
+		      });
+		  });
+	  } catch(e) { alert("Error al cargar workspace: "+e); console.error(e); }
+      }
+
+      // Función para abrir un archivo local
+      document.getElementById('fileInput').addEventListener('change', e => {
+	  const file = e.target.files[0];
+	  if (!file) return;
+	  const reader = new FileReader();
+
+	  reader.onload = evt => loadWorkspace(evt.target.result);
+
+	  reader.readAsText(file);
+	  e.target.value = '';
+      });
+
+      // Función para cargar desde URL (?code=... o ?url=...)
+      async function loadWorkspaceFromURL() {
+	  const params = new URLSearchParams(window.location.search);
+	  if(params.has('code')) {
+	      try {
+		  let URI = params.get('code');
+		  // //	    const xmlText = decodeURIComponent(URI);
+		  URI = URI.replace(/-/g, '+').replace(/_/g, '/');
+		  while (URI.length % 4) URI += '=';
+		  const xmlText = decodeURIComponent(escape(atob(URI)));
+
+		  loadWorkspace(xmlText);
+
+		  // Quita el parámetro ?code=
+		  const urlSinParametros = window.location.origin + window.location.pathname;
+		  window.history.replaceState(null, '', urlSinParametros);
+	      }
+	      catch (e) {
+		  alert("Error cargando Workspace desde code: "+e);
+		  console.error(e);
+	      }
+	      
+	  } else if(params.has('url')) {
+              try {
+		  const res = await fetch(params.get('url'));
+		  if(!res.ok) throw new Error("No se pudo cargar XML");
+		  const xmlText = await res.text();
+
+		  loadWorkspace(xmlText);
+              }
+	      catch(e) {
+		  alert("Error cargando Workspace desde url: "+e);
+		  console.error(e);
+	      }
+	  }
+      }
+
+      // Se ejecuta al cargar la pagina para ver los parámetros
+      loadWorkspaceFromURL(); 
+      workspace.scrollCenter();
+
+      
+      // Función para traducir los bloques a código Prolog
+      function translateBlock(block) {
+	  if (!block) return '';
+	  const pad = n => ' '.repeat(n * 4);
+
+	  switch(block.type) {
+
+          case 'main': {
+              // Premisas
+              const premisas = [];
+              let p = block.getInputTargetBlock('PREMISAS');
+              while (p) { const s = translateBlock(p); if(s) premisas.push(pad(2)+s); p = p.getNextBlock(); }
+              const premStr = '[\n' + premisas.join(',\n') + '\n' + pad(1) + ']';
+
+              // Consecuente
+              const cons = translateBlock(block.getInputTargetBlock('CONSECUENTE'));
+
+              // Prueba
+              const pruebaBlocks = [];
+              let r = block.getInputTargetBlock('PRUEBA');
+              while (r) { const s = translateBlock(r); if(s) pruebaBlocks.push(s); r = r.getNextBlock(); }
+              const pruebaStr = pad(1) + '[\n' + pruebaBlocks.join(',\n') + '\n' + pad(1) + ']';
+
+              return `main(\n${pad(1)}${premStr},\n${pad(1)}${cons},\n${pruebaStr}\n).`;
+          }
+
+          case 'premisa':
+              return translateBlock(block.getInputTargetBlock('PREMISA'));
+
+          case 'rule_premisa':
+              return pad(2) + `'Premisa'(${block.getFieldValue('PREMISA_INDEX')})`;
+
+          case 'proof': {
+              const rules = [];
+              let r = block.getInputTargetBlock('RULESS');
+              while (r) { const s = translateBlock(r); if(s) rules.push(s); r = r.getNextBlock(); }
+              const rulesStr = rules.join(',\n');
+              return rulesStr;
+          }
+              
+          case 'rule_supuesto':
+              return pad(2) + `'Supuesto'(${translateBlock(block.getInputTargetBlock('A'))})`;
+
+          case 'rule_I_imply': {
+              const innerRules = [];
+              let r = block.getInputTargetBlock('RULESS');
+              while (r) { const s = translateBlock(r); if(s) innerRules.push(s); r = r.getNextBlock(); }
+              
+              const A = translateBlock(block.getInputTargetBlock('A'));
+              const B = translateBlock(block.getInputTargetBlock('B'));
+              innerRules.push(pad(2) + `'I' --> (${A}, ${B})`);
+              return innerRules.join(',\n');
+          }
+
+          case 'rule_I_and':
+              return pad(2) + `'I' and (${translateBlock(block.getInputTargetBlock('A'))}, ${translateBlock(block.getInputTargetBlock('B'))})`;
+	  case 'rule_I_or': {
+	      const opt = (block.getInputTargetBlock('A') && block.getInputTargetBlock('A').type === 'rules_selector') ? 'a' : 'b';
+              return pad(2) + `'I' or ${opt}(${translateBlock(block.getInputTargetBlock('A'))}, ${translateBlock(block.getInputTargetBlock('B'))})`;
+	  }
+          case 'rule_I_not':
+              return pad(2) + `'I' ! (${translateBlock(block.getInputTargetBlock('A'))})`;
+          case 'rule_I_double':
+              return pad(2) + `'I' <-> (${translateBlock(block.getInputTargetBlock('A'))}, ${translateBlock(block.getInputTargetBlock('B'))})`;
+
+          case 'rule_E_and':
+              return pad(2) + `'E' and ${block.getFieldValue('LR')}(${translateBlock(block.getInputTargetBlock('A'))})`;
+          case 'rule_E_or':
+              return pad(2) + `'E' or (${translateBlock(block.getInputTargetBlock('A'))}, ${translateBlock(block.getInputTargetBlock('B'))}, ${translateBlock(block.getInputTargetBlock('C'))})`;
+          case 'rule_E_not':
+              return pad(2) + `'E' ! (${translateBlock(block.getInputTargetBlock('A'))})`;
+          case 'rule_E_imply':
+              return pad(2) + `'E' --> (${translateBlock(block.getInputTargetBlock('A'))}, ${translateBlock(block.getInputTargetBlock('B'))})`;
+          case 'rule_E_double':
+              return pad(2) + `'E' <-> ${block.getFieldValue('LR')}(${translateBlock(block.getInputTargetBlock('A'))})`;
+
+          case 'proposition_get_dropdown': {
+              const v = workspace.getVariableById(block.getFieldValue('PROPOSITION'));
+              return v ? v.name : '(sin variable)';
+          }
+
+          case 'logic_binary': {
+              const A = translateBlock(block.getInputTargetBlock('A'));
+              const B = translateBlock(block.getInputTargetBlock('B'));
+              const opMap = { '&&':'and', '||':'or', '->':'-->', '<->':'<->' };
+              return `(${A} ${opMap[block.getFieldValue('OP')] || block.getFieldValue('OP')} ${B})`;
+          }
+
+          case 'logic_not':
+              return `!(${translateBlock(block.getInputTargetBlock('A'))})`;
+
+          case 'rules_selector':
+              return block.getFieldValue('RULE_NAME').replace('#','');
+
+          default:
+              return '';
+	  }
+      }
+
+      // Work in progress para la versión 2.0
+      function generateProof(block) {
+	  if (!block) return '';
+	  const pad = n => ' '.repeat(0 * 2);
+
+	  switch(block.type) {
+	      
+	  case 'main': {
+              // Premisas
+              const premisas = [];
+              let p = block.getInputTargetBlock('PREMISAS');
+              while (p) { const s = generateProof(p); if(s) premisas.push(s); p = p.getNextBlock(); }
+              const premStr = premisas.join(', ') ;
+	      
+              // Consecuente
+              const cons = generateProof(block.getInputTargetBlock('CONSECUENTE'));
+	      
+              // Prueba
+              const pruebaBlocks = [];
+              let r = block.getInputTargetBlock('PRUEBA');
+              while (r) { const s = generateProof(r); if(s) pruebaBlocks.push(s); r = r.getNextBlock(); }
+              const pruebaStr = pruebaBlocks.join('\n');
+	      
+              return `T [  ${premStr} ] |- ${cons}\n\n${pruebaStr}`;
+	  }
+
+	  case 'proof': {
+              const rules = [];
+              let r = block.getInputTargetBlock('RULESS');
+              while (r) { const s = generateProof(r); if(s) rules.push(s); r = r.getNextBlock(); }
+              const rulesStr = rules.join(',\n');
+              return rulesStr;
+          }
+
+	  case 'rule_I_imply': {
+	      
+              const innerRules = [];
+              let r = block.getInputTargetBlock('RULESS');
+              while (r) { const s =  generateProof(r); if(s) innerRules.push(s); r = r.getNextBlock(); }
+              const id = block.getFieldValue('RULES_NAME').replace('#','');
+              const A = translateBlock(block.getInputTargetBlock('A'));
+              const B = translateBlock(block.getInputTargetBlock('B'));
+              innerRules.push(id + pad(2) + `'I' --> (${A}, ${B})`);
+              return innerRules.join(',\n');
+          }
+
+          default:
+              return translateBlock(block);
+	  }
+      }
+      
+      
+      </script>
+  </body>
+</html>
