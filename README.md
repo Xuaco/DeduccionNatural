@@ -62,6 +62,12 @@ avanza a los ejercicios ordenados por dificultad: básico, medio y
 avanzado, p.ej., el ejemplo 1 se muestra en la siguiente captura de pantalla.
 [![captura](captura_blockly.png)](http://platon.etsii.urjc.es/~jarias/DN/DeduccionNatural.blockly/)
 
+NOTA: Para poder "Guardar" en el directorio que quieras o que se copie
+el workspace en el portapapeles al pulsar "Compartir" hay que realizar
+la conexión mediante https://. Para ello pulsa en el logo (arriba a la
+izquierda), sin embargo no tenemos certificado y el navegador se va a
+quejar ;-).
+
 ## Tutoriales
 
 DeduccionNatural[.pl, .blockly] se ha ido desarrollando como parte de
