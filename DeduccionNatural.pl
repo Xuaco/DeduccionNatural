@@ -1,87 +1,121 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                          Copyright (C)2023 Joaquín Arias (URJC)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                          Copyright (C)2025 Joaquín Arias (URJC)
 %  Name: DeduccionNatural.pl
 %  Author: Joaquín Arias
-%  Date: 24 October 2023
+%  Version 2.0
+%  Date: 17 November 2025
 %  Purpose: Execute Natural Deduction Proofs
 %  LICENSE: Apache License 2.0
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Operator precedence
 :- op(200, fy, !).
 :- op(400, xfy,[and, or]).
 :- op(600, xfy,[-->, <->]).
 
-% Auxiliary precedence for !
-% Used to define the inference rules
-:- op(400, xfy, !).
-
-%% Bug found by students of the cybersecurity degree of the URJC in
-%% the academic year 23/24. Solved in 24 October 2023 
-bug :-
-    main([s --> c],
-        c,
-        [ 
-            'Premisa'(1),
-            'Supuesto'(s),
-            'E' --> (1,2),
-            'I' --> (2,3),
-            'I' or a(3,sa),
-            'E' --> (5,2)
-        ]).
-
-
 %% Examples
 ejemplo1 :-
-    main([ s and p or q, p --> ! r, q --> ! r ],
-         s and ! r,
-         [ 'Premisa'(1),
-           'E' and b(1),
-           'Premisa'(2),
-           'Premisa'(3),
-           'E' or (2, 3, 4),
-           'E' and a(1),
-           'I' and (6, 5)
-         ]).
+    main(
+        [
+            s and p or q,
+            p --> ! r,
+            q --> ! r
+        ],
+        s and ! r,
+        [
+            'Premisa'(1),
+            'E' and b(1),
+            'Premisa'(2),
+            'Premisa'(3),
+            'E' or (2, 3, 4),
+            'E' and a(1),
+            'I' and (6, 5)
+        ]
+    ).
 
 ejemplo2 :-
-    main([ !p --> q and !q ],
-         p,
-         [ 'Premisa'(1),
-           'I' ! (1),
-           'E' ! (2)
-         ]).
+    main(
+        [
+            !p --> q and !q
+        ],
+        p,
+        [
+            'Premisa'(1),
+            'I' ! (1),
+            'E' ! (2)
+        ]
+    ).
 
 ejemplo3 :-
-    main([ p --> !r, !r-->q, p ],
-         q,
-         [ 'Premisa'(1),
-           'Premisa'(3),
-           'E' --> (1, 2),
-           'Premisa'(2),
-           'E' --> (4, 3)
-         ]).
+    main(
+        [
+            p --> !r,
+            !r-->q, p
+        ],
+        q,
+        [
+            'Premisa'(1),
+            'Premisa'(3),
+            'E' --> (1, 2),
+            'Premisa'(2),
+            'E' --> (4, 3)
+        ]
+    ).
 
 ejemplo4 :-
-    main([ p --> q, q-->r],
-         p --> r,
-         [ 'Premisa'(1),
-           'Premisa'(2),
-           'Supuesto'(p),
-           'E' --> (1, 3),
-           'E' --> (2, 4),
-           'I' --> (3, 5)
-         ]).
+    main(
+        [
+            p --> q,
+            q --> r
+        ],
+        p --> r,
+        [
+            'Premisa'(1),
+            'Premisa'(2),
+            'Supuesto'(p),
+            'E' --> (1, 3),
+            'E' --> (2, 4),
+            'I' --> (3, 5)
+        ]
+    ).
 
 ejemploMT :-
-    main([ r --> (q and s), !(q and s) ],
-         !r,
-         [ 'Premisa'(1),
-           'Premisa'(2),
-           'MT'(1, 2)
-         ]).
+    main(
+        [
+            r --> (q and s),
+            !(q and s)
+        ],
+        !r,
+        [
+            'Premisa'(1),
+            'Premisa'(2),
+            'MT'(1, 2)
+        ]
+    ).
+
+%% Derived Rules
+rule( 'MT',
+      [
+          FA --> FB,
+          !FB
+      ],
+      !FA,
+      [
+          'Premisa'(1),
+          'Premisa'(2),
+          'Supuesto'(FA),
+          'E' --> (1, 3),
+          'I' and (4, 2),
+          'I' --> (3, 5),    
+          'I' ! (6)
+      ]
+    ).
+   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ADD here your examples and/or derived rules ;-)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 %% This example fails becuase the assumption is not closed
 ejemploSupuesto :- 
@@ -99,6 +133,23 @@ ejemploSupuesto :-
             'Supuesto'(p4),
             'Supuesto'(s and !r)
           ]).
+
+%% Bug found by students of the cybersecurity degree of the URJC in
+%% the academic year 23/24. Solved in 24 October 2023 
+bug :-
+    main([s --> c],
+        c,
+        [ 'Premisa'(1),
+          'Supuesto'(s),
+          'E' --> (1,2),
+          'I' --> (2,3),
+          'I' or a(3,sa),
+          'E' --> (5,2)
+        ]).
+
+% Auxiliary precedence for !
+% Used to define the inference rules
+:- op(400, xfy, !).
 
 :- data counter/1, formula/2, tabular/1, closed/1, opened/1, check/1.
 main(Hypotheses, Deduction, Proof) :-
@@ -271,21 +322,6 @@ format_tabular(T) :-
 'E' <-> b(A) :-
         formula(A, FA <-> FB), is_valid(A),
         add_formula(FB --> FA).
-
-
-%% Derived Rules
-rule( 'MT',
-      [ FA --> FB, !FB ],
-      !FA,
-      [ 'Premisa'(1),
-        'Premisa'(2),
-        'Supuesto'(FA),
-        'E' --> (1, 3),
-        'I' and (4, 2),
-        'I' --> (3, 5),    
-        'I' ! (6)
-      ]).
-   
 
 % Auxiliary predicates
 last_opened(A) :-
