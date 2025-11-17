@@ -47,12 +47,12 @@ top-level (panel de la derecha), p.ej., para ejecutar el ejemplo 1:
 
 El resultado esperado de la ejecución, usando el Playground de Ciao,
 se muestra en la siguiente captura de pantalla.
-![captura](captura_pl.png)
+[![captura](captura_pl.png)](http://platon.etsii.urjc.es/~jarias/DN/DeduccionNatural.pl/)
 
 ### DeduccionNatural.blockly
 
 Ejecutar visitando la pagina
-[http://platon.etsii.urjc.es/~jarias/DN/DeduccionNatural.blockly/](http://platon.etsii.urjc.es/~jarias/DN/DeduccionNatural.bockly/).
+[http://platon.etsii.urjc.es/~jarias/DN/DeduccionNatural.blockly/](http://platon.etsii.urjc.es/~jarias/DN/DeduccionNatural.blockly/).
 
 Se trata de una pagina web con solo dos dependencias (el logo y un
 archivo con los ejemplos/ejercicios), en el que se pueden construir
@@ -60,7 +60,7 @@ las consultas para DeduccionNatural.pl usando los bloques de Blockly
 by Google.. Para ello empieza revisando los ejemplos y, después,
 avanza a los ejercicios ordenados por dificultad: básico, medio y
 avanzado, p.ej., el ejemplo 1 se muestra en la siguiente captura de pantalla.
-![captura](captura_blockly.png)
+[![captura](captura_blockly.png)](http://platon.etsii.urjc.es/~jarias/DN/DeduccionNatural.blockly/)
 
 ## Tutoriales
 
