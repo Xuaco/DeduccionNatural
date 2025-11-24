@@ -13,6 +13,10 @@
 :- op(400, xfy,[and, or]).
 :- op(600, xfy,[-->, <->]).
 
+% Auxiliary precedence for !
+% Used to define the inference rules
+:- op(400, xfy, !).
+
 %% Examples
 ejemplo1 :-
     main(
@@ -146,10 +150,6 @@ bug :-
           'I' or a(3,sa),
           'E' --> (5,2)
         ]).
-
-% Auxiliary precedence for !
-% Used to define the inference rules
-:- op(400, xfy, !).
 
 :- data counter/1, formula/2, tabular/1, closed/1, opened/1, check/1.
 main(Hypotheses, Deduction, Proof) :-

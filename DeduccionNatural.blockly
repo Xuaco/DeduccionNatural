@@ -123,20 +123,26 @@
 	    ejecutarla usando <b>DeduccionNatural.pl</b>. Una vez termines de
 	    construir la demostración:
 	    <ul style="margin-top:-12px;margin-bottom:0;padding-left:20px;">
-	    <li > Cópiala y abre el enlace
-	    <a href="https://tinyurl.com/deduccionnatural23b"
-	    target="_blank"><span style=" word-break:
-	    break-all;">https://tinyurl.com/deduccionnatural23b</span></a>.
-	    </li>
-	    <li> Pégala en el toplevel de Ciao Prolog (panel derecho)
-	    y pulsa "Enter".
+	      <li> Copia el predicado main/3.</li>
+              <li> Abre DeduccionNatural.pl pulsando el enlace
+	        <a href="http://platon.etsii.urjc.es/~jarias/DN/DeduccionNatural.pl/"
+	           target="_blank"><span style=" word-break:
+	                                        break-all;">http://platon.etsii.urjc.es/~jarias/DN/DeduccionNatural.pl/</span></a>.
+	      </li>
+	      <li> Pega main/3 en el toplevel de Ciao Prolog (panel
+	        derecho) y pulsa "Enter" para ejecutarlo.
 	    </li></ul>
 	    Comprueba si tu demostración es correcta.  Este proceso te
 	    permitirá verificar rápidamente si has construido bien la
 	    prueba.
 	  </p>
 
-	  <p>
+          <p>
+            d) Si haces reglas derivadas cópialas en el programa
+            DeduccionNatural.pl (panel izquierdo) antes de ejecutar el
+            predicado main/3.
+          </p>
+
 	  <p>
 	    NOTA: DeduccionNatural.blockly además de
 	    cargar <i>ejemplos</i>, permite <i>deshacer</i>
@@ -150,9 +156,9 @@
 	</div>
 
 	<footer style="font-size:14px;padding:2px;color:#5b74a5">
-	  Version 1.0 &nbsp;|&nbsp;
+	  Version 2.0 &nbsp;|&nbsp;
 	  <i class="fa-regular fa-copyright"></i> 2025 &nbsp;
-	  <a href="http://www.ia.urjc.es/GIA/joaquin-arias/">Joaquín Arias</a> - URJC
+	  <a href="http://www.ia.urjc.es/GIA/joaquin-arias/" target="_blank">Joaquín Arias</a> - URJC
 	</footer>
       </aside>
     </div>
@@ -239,6 +245,8 @@
       <block type="rule_I_double"></block>          <sep gap="5"></sep>
       <block type="rule_E_double"></block>
 
+      <block type="derivada"></block>
+      
     </xml>
     
     <script>
@@ -370,7 +378,7 @@
 
 	  {
 	      "type": "rule_I_and",
-	      "message0": "%1 : I∧ (%2,%3)",
+	      "message0": "%1 : I∧ (%2 %3)",
 	      "args0": [
 		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
 		  { "type": "input_value", "name": "A", "check": "RuleNum" },
@@ -400,7 +408,7 @@
 
 	  {
 	      "type": "rule_I_or",
-	      "message0": "%1 : I∨ (%2,%3)",
+	      "message0": "%1 : I∨ (%2 %3)",
 	      "args0": [
 		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
 		  { "type": "input_value", "name": "A", "check": ["RuleNum", "Boolean"] },
@@ -415,7 +423,7 @@
 
 	  {
 	      "type": "rule_E_or",
-	      "message0": "%1 : E∨ (%2,%3,%4)",
+	      "message0": "%1 : E∨ (%2 %3 %4)",
 	      "args0": [
 		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
 		  { "type": "input_value", "name": "A", "check": "RuleNum" },
@@ -459,7 +467,7 @@
 
 	  {
 	      "type": "rule_I_imply",
-	      "message0": " %1 %2 :  I→ (%3,%4)",
+	      "message0": " %1 %2 :  I→ (%3 %4)",
 	      "args0": [
 		  { "type": "input_statement", "name": "RULESS" },
 		  { "type": "field_label", "name": "RULES_NAME", "text": "#x","check": "imply" },
@@ -476,7 +484,7 @@
 
 	  {
 	      "type": "rule_E_imply",
-	      "message0": "%1 : E→ (%2,%3)",
+	      "message0": "%1 : E→ (%2 %3)",
 	      "args0": [
 		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
 		  { "type": "input_value", "name": "A", "check": "RuleNum" },
@@ -491,7 +499,7 @@
 
 	  {
 	      "type": "rule_I_double",
-	      "message0": "%1 : I↔ (%2,%3)",
+	      "message0": "%1 : I↔ (%2 %3)",
 	      "args0": [
 		  { "type": "field_label", "name": "RULES_NAME", "text": "#x" },
 		  { "type": "input_value", "name": "A", "check": "RuleNum" },
@@ -557,6 +565,23 @@
 	      "colour": 210,
 	      "tooltip": "Conectiva lógica binaria.",
 	      "helpUrl": ""
+	  },
+	  {
+	      "type": "derivada",
+	      "message0": "Nombre: %1 %2 { Premisas } %3 %4 ⊨ Consecuente %5 %6 %7",
+	      "args0": [
+		  { "type": "field_input", "name": "NOMBRE", "text": " " },
+		  { "type": "input_dummy" },                  
+		  { "type": "input_statement", "name": "PREMISAS", "check": "premisa" },
+		  { "type": "field_label", "name": "TEXT", "text": "    " },
+		  { "type": "input_value", "name": "CONSECUENTE", "check": "Boolean" },
+		  { "type": "input_dummy" },
+		  { "type": "input_statement", "name": "PRUEBA", "check": "proof" }
+	      ],
+	      "inputsInline": false,
+	      "colour": 353,
+	      "tooltip": "Bloque inicial: solo puede existir uno y no se conecta con otros.",
+	      "helpUrl": ""
 	  }
       ]);
       
@@ -581,14 +606,13 @@
       };
 
 
-
       // Inyectar workspace
       const workspace = Blockly.inject('blocklyDiv', {
 	  toolbox: document.getElementById('toolbox'),
-	  scrollbars: false,
+	  scrollbars: true,
 	  trashcan: false,
 	  grid: { spacing: 20, length: 2, colour: '#ccc', snap: true },
-	  zoom: {     startScale: .9, controls: true, wheel: true }
+	  zoom: { startScale: .8, controls: true, wheel: true }
       });
      
 
@@ -608,6 +632,74 @@
 	      alert("Solo se permite un bloque 'inicio'.");
 	  }
       }
+      // Function para añadir bloque de regla derivada
+      function crea_rule_derivada(blockId,premisas,name) {
+          let args = [];
+          args.push({ "type": "field_label", "name": "RULES_NAME", "text": "#x" });
+          args.push({ "type": "field_label", "name": "DERIVADA", "text": name});
+          let message = "%1 : %2 ( ";
+          for (let i = 0; i < premisas; i++) {
+              const ID = String.fromCharCode(65 + i); // 65 = 'A'
+              args.push({"type": "input_value", "name": ID });
+              message = message + "%"+ (i+3) + " ";
+          }
+          message  = message + ")";
+          const bloqueJson = {
+              "type": "rule_derivada_" + blockId,
+              "message0": message,
+              "args0": args,
+	      "previousStatement": "rules",
+	      "nextStatement": "rules",
+	      "colour": 100,
+          };
+          Blockly.defineBlocksWithJsonArray([bloqueJson]);
+      }   
+      function add_regla_derivada(event) {
+	  const block = workspace.getBlockById(event.ids[0]);
+          const blockId = block.id;
+          if (!block) return;
+          if (block.type !== 'derivada') return;
+          
+          // Agregar Bloque
+          const toolbox = document.getElementById("toolbox");
+          const blockType = `rule_derivada_${blockId}`;
+          if (!toolbox.querySelector(`block[type="${blockType}"]`)) {
+
+              crea_rule_derivada(blockId, 0, " ");
+              
+              const doc = Blockly.utils.xml.textToDom(`<xml><block type="${blockType}"  gap="6"></block></xml>`);
+              const nuevoBloque = doc.querySelector('block');
+              toolbox.appendChild(nuevoBloque);
+              workspace.updateToolbox(toolbox);
+          }
+      }
+      function createRuleBlocks(xml) {
+          const derivadas = xml.querySelectorAll('block[type="derivada"]');
+          derivadas.forEach (b => {
+              const blockId = b.getAttribute('id');
+              const reglaNameField = b.querySelector('field[name="NOMBRE"]');
+              const reglaName = reglaNameField ? reglaNameField.textContent : " ";
+              const premisas = b.querySelectorAll('statement[name="PREMISAS"] block[type="premisa"]').length;
+
+              crea_rule_derivada(blockId, premisas, reglaName);
+          });
+      }
+      // Quita reglas_derivadas
+      function remove_regla_derivada(event) {
+	  const block = workspace.getBlockById(event.ids[0]);
+          const blockId = block.id;
+          if (!block) return;
+          if (block.type !== 'derivada') return;
+        
+          const toolbox = document.getElementById("toolbox");
+
+          const doc = Blockly.utils.xml.textToDom(`<xml><block type="rule_derivada_${blockId}" sep="6"></block></xml>`);
+          const nuevoBloque = doc.querySelector('block');
+          toolbox.removeChild(nuevoBloque);
+          workspace.updateToolbox(toolbox);
+      }
+
+      
       // Function para enumerar los bloque de reglas
       function process_rules() {
 	  let ruless = [];
@@ -626,7 +718,7 @@
 	  }
 	  
           workspace.getAllBlocks(false).forEach(block => {
-	      if (block.type === 'main') {
+	      if (block.type === 'main' || block.type === 'derivada') {
 		  premisa = block.getInputTargetBlock('PREMISAS');
 		  i = 1;
 		  while (premisa) {
@@ -660,7 +752,8 @@
 		    const numB = parseInt(b.substring(1));
 		    return numA - numB;
 		});
-	  const options = keys.length ? keys.map(k => [k, k]) : [['(sin reglas)', '']];
+          const uniqueKeys = Array.from(new Set(keys));
+	  const options = uniqueKeys.length ? uniqueKeys.map(k => [k, k]) : [['(sin reglas)', '']];
 	  workspace.getAllBlocks(false).forEach(b => {
 	      if (b.type === 'rules_selector') {
 		  const field = b.getField('RULE_NAME');
@@ -701,19 +794,76 @@
 	      }
 	  });
       }
+      function updateReglaDerivada() {
+          workspace.getAllBlocks(false).forEach(b => {
+	      if (b.type === "derivada") {
+                  const blockId = b.id;
+                  const name = b.getFieldValue("NOMBRE");
+                  let premisas = 0;
+                  let p = b.getInputTargetBlock('PREMISAS');
+                  while (p) { premisas++; p = p.getNextBlock();}
 
+                  crea_rule_derivada(blockId,premisas,name);
 
+                  const toolbox = document.getElementById("toolbox");
+                  workspace.updateToolbox(toolbox);                  
+                  
+		  workspace.getAllBlocks(false).forEach(c => {
+                      if (c.type === "rule_derivada_" + blockId) {
+		          c.getField('DERIVADA').setValue(name);
+                          const numInputs = c.inputList.length - 1;
+                          if (premisas != numInputs){
+                              const type = c.type;
+                              const xy = c.getRelativeToSurfaceXY();
+                              const prev = c.previousConnection ? c.previousConnection.targetConnection : null;
+                              const next = c.nextConnection ? c.nextConnection.targetConnection : null;
+                              const newBlock = workspace.newBlock(type);
+                              newBlock.moveBy(xy.x, xy.y);
+                              if (prev) newBlock.previousConnection.connect(prev);
+                              if (next) newBlock.nextConnection.connect(next);
+                              c.dispose(true);
+                              newBlock.initSvg();
+                              newBlock.render();
+                             
+                          }
+                      }
+                  });
+                  
+              }
+          });
+          const derivadasIds = workspace.getAllBlocks(false)
+                .filter(b => b.type === "derivada")
+                .map(b => b.id);
+          
+          const toolbox = document.getElementById("toolbox");
+          const dynamicBlocks = toolbox.querySelectorAll('block[type^="rule_derivada_"]');
+          dynamicBlocks.forEach(b => {
+              const type = b.getAttribute("type");        // "rule_derivada_<ID>"
+              const id = type.replace("rule_derivada_", ""); // extraer ID
+              if (!derivadasIds.includes(id)) {
+                  toolbox.removeChild(b);              // quitar del toolbox
+                  delete Blockly.Blocks[type];              // borrar definición
+                  workspace.getAllBlocks(false)
+                      .filter(c => c.type === type)
+                      .forEach(c => c.dispose(true));
+              }
+          });
+          workspace.updateToolbox(toolbox);          
+      }
+      
       // Listener para actualizar distintos casos
       workspace.addChangeListener(function(event) {
-	  // Al crear bloques
 	  if (event.type === Blockly.Events.BLOCK_CREATE) {
 	      only_one_main();
+              add_regla_derivada(event);
 	  }
 	  // Al mover bloques...
-	  if (event.type === Blockly.Events.BLOCK_MOVE || event.type === Blockly.Events.END_DRAG) {
+	  if (event.type === Blockly.Events.BLOCK_MOVE || event.type === Blockly.Events.END_DRAG
+             || event.type === Blockly.Events.BLOCK_DELETE || event.type === Blockly.Events.CHANGE) {
 	      process_rules();
 	      updatePremisaOptions();
 	      updateImply();
+              updateReglaDerivada();
 	  }
 	  // actualiza el codigo de Prolog continuamente
           const code = workspace.getTopBlocks(true)
@@ -809,13 +959,14 @@
       }
       
       // Función para cargar el workspace desde un XML
-      function loadWorkspace(xmlText) {
+      async function loadWorkspace(xmlText) {
 	  try {
               const xml = Blockly.utils.xml.textToDom(xmlText);
               workspace.clear();
+              createRuleBlocks(xml);
               Blockly.Xml.domToWorkspace(xml, workspace);
               process_rules();
-	      updatePremisaOptions(); 
+	      updatePremisaOptions();
               workspace.updateToolbox(document.getElementById('toolbox'));
 
               [['rule_premisa','PREMISA_INDEX'], ['rules_selector','RULE_NAME']]
@@ -856,6 +1007,8 @@
 
 		  loadWorkspace(xmlText);
 
+                  workspace.scroll(workspace.scrollX + 70, workspace.scrollY + 30);
+                  
 		  // Quita el parámetro ?code=
 		  const urlSinParametros = window.location.origin + window.location.pathname;
 		  window.history.replaceState(null, '', urlSinParametros);
@@ -882,8 +1035,7 @@
 
       // Se ejecuta al cargar la pagina para ver los parámetros
       loadWorkspaceFromURL(); 
-      workspace.scrollCenter();
-
+      //      workspace.scrollCenter();
       
       // Función para traducir los bloques a código Prolog
       function translateBlock(block) {
@@ -908,7 +1060,22 @@
               while (r) { const s = translateBlock(r); if(s) pruebaBlocks.push(s); r = r.getNextBlock(); }
               const pruebaStr = pad(1) + '[\n' + pruebaBlocks.join(',\n') + '\n' + pad(1) + ']';
 
-              return `main(\n${pad(1)}${premStr},\n${pad(1)}${cons},\n${pruebaStr}\n).`;
+              return `main(\n${pad(1)}${premStr},\n${pad(1)}${cons},\n${pruebaStr}\n).\n`;
+          }
+
+          case 'derivada': {
+              const name = block.getFieldValue("NOMBRE");
+              const premisas = [];
+              let p = block.getInputTargetBlock('PREMISAS');
+              while (p) { const s = translateBlock(p); if(s) premisas.push(pad(2)+s); p = p.getNextBlock(); }
+              const premStr = '[\n' + premisas.join(',\n') + '\n' + pad(1) + ']';
+              const cons = translateBlock(block.getInputTargetBlock('CONSECUENTE'));
+              const pruebaBlocks = [];
+              let r = block.getInputTargetBlock('PRUEBA');
+              while (r) { const s = translateBlock(r); if(s) pruebaBlocks.push(s); r = r.getNextBlock(); }
+              const pruebaStr = pad(1) + '[\n' + pruebaBlocks.join(',\n') + '\n' + pad(1) + ']';
+
+              return `rule('${name}',\n${pad(1)}${premStr},\n${pad(1)}${cons},\n${pruebaStr}\n).\n`;
           }
 
           case 'premisa':
@@ -980,6 +1147,15 @@
               return block.getFieldValue('RULE_NAME').replace('#','');
 
           default:
+              if (block.type.startsWith("rule_derivada_")) {
+                  let premisas = [];
+                  for (const input of block.inputList) {
+                      if (input.type === Blockly.INPUT_VALUE && input.connection && input.connection.targetBlock()) {
+                          premisas.push(translateBlock(input.connection.targetBlock()));
+                      }
+                  }
+                  return pad(2) + `'${block.getFieldValue("DERIVADA")}'(${premisas.join(', ')})`;
+              }              
               return '';
 	  }
       }
